@@ -10,12 +10,7 @@ import org.springframework.web.filter.CorsFilter
 
 @Configuration
 class AdditionalWebConfig {
-    /**
-     * Allowing all origins, headers and methods here is only intended to keep this example simple.
-     * This is not a default recommended configuration. Make adjustments as
-     * necessary to your use case.
-     *
-     */
+
     @Bean
     fun corsFilter(): FilterRegistrationBean<*> {
         val source = UrlBasedCorsConfigurationSource()

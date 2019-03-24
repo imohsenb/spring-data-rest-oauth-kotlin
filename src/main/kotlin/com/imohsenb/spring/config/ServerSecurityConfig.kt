@@ -15,6 +15,13 @@ import org.springframework.security.oauth2.provider.token.DefaultTokenServices
 import org.springframework.security.oauth2.provider.token.TokenStore
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter
 import org.springframework.security.oauth2.provider.token.store.JwtTokenStore
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
+import org.springframework.security.core.userdetails.UserDetailsService
+import org.springframework.security.crypto.password.PasswordEncoder
+import org.springframework.beans.factory.annotation.Autowired
+
+
+
 
 @Configuration
 @EnableWebSecurity
@@ -22,7 +29,7 @@ import org.springframework.security.oauth2.provider.token.store.JwtTokenStore
 class ServerSecurityConfig : WebSecurityConfigurerAdapter() {
 
     @Value("\${security.signing-key}")
-    private val signingKey: String? = null
+    private lateinit var signingKey: String
 
     @Value("\${security.encoding-strength}")
     private val encodingStrength: Int? = null
@@ -35,7 +42,6 @@ class ServerSecurityConfig : WebSecurityConfigurerAdapter() {
     override fun authenticationManager(): AuthenticationManager {
         return super.authenticationManager()
     }
-
 
     @Bean
     fun passwordEncoder(): BCryptPasswordEncoder {
@@ -59,7 +65,7 @@ class ServerSecurityConfig : WebSecurityConfigurerAdapter() {
     @Bean
     fun accessTokenConverter(): JwtAccessTokenConverter {
         val converter = JwtAccessTokenConverter()
-        converter.setSigningKey(signingKey!!)
+        converter.setSigningKey(signingKey)
         return converter
     }
 
@@ -69,7 +75,7 @@ class ServerSecurityConfig : WebSecurityConfigurerAdapter() {
     }
 
     @Bean
-    @Primary //Making this primary to avoid any accidental duplication with another token service instance of the same name
+    @Primary
     fun tokenServices(): DefaultTokenServices {
         val defaultTokenServices = DefaultTokenServices()
         defaultTokenServices.setTokenStore(tokenStore())

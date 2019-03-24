@@ -8,6 +8,7 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.E
 import org.springframework.security.oauth2.provider.token.ResourceServerTokenServices
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.http.HttpMethod
 
 
 @Configuration
@@ -15,7 +16,7 @@ import org.springframework.beans.factory.annotation.Value
 class ResourceServerConfiguration : ResourceServerConfigurerAdapter() {
 
     @Autowired
-    private val tokenServices: ResourceServerTokenServices? = null
+    private lateinit var tokenServices: ResourceServerTokenServices
 
     @Value("\${security.jwt.resource-ids}")
     private val resourceIds: String? = null
@@ -31,30 +32,12 @@ class ResourceServerConfiguration : ResourceServerConfigurerAdapter() {
                 .requestMatchers()
                 .and()
                 .authorizeRequests()
-                .antMatchers("/actuator/**", "/api-docs/**").permitAll()
-                .antMatchers("/springjwt/**").authenticated()
+                .antMatchers("/users/**").hasRole("ADMIN")
+                .antMatchers("/**").hasAnyRole("ADMIN", "STANDARD")
                 .and()
-                .headers()
-                .frameOptions()
-                .disable()
-                .and().csrf().ignoringAntMatchers("/console/**")//don't apply CSRF protection to /h2-console
+                .httpBasic()
+                .and()
+                .csrf().disable()
     }
 
-//    @Throws(Exception::class)
-//    override fun configure(http: HttpSecurity) {
-////        http.requestMatchers()
-////                .antMatchers(SECURED_PATTERN).and().authorizeRequests()
-////                .antMatchers(HttpMethod.POST, SECURED_PATTERN).access(SECURED_WRITE_SCOPE)
-////                .anyRequest().access(SECURED_READ_SCOPE)
-//        http.requestMatchers().anyRequest().and().authorizeRequests()
-//                .antMatchers("/**").permitAll()
-//    }
-
-    companion object {
-
-        private val RESOURCE_ID = "resource-server-rest-api"
-        private val SECURED_READ_SCOPE = "#oauth2.hasScope('read')"
-        private val SECURED_WRITE_SCOPE = "#oauth2.hasScope('write')"
-        private val SECURED_PATTERN = "/secured/**"
-    }
 }

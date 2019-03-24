@@ -42,13 +42,13 @@ class AuthorizationServerConfig : AuthorizationServerConfigurerAdapter() {
     private lateinit var passwordEncoder: PasswordEncoder
 
     @Autowired
-    private val tokenStore: TokenStore? = null
+    private lateinit var tokenStore: TokenStore
 
     @Autowired
-    private val accessTokenConverter: JwtAccessTokenConverter? = null
+    private lateinit var accessTokenConverter: JwtAccessTokenConverter
 
     @Autowired
-    private val authenticationManager: AuthenticationManager? = null
+    private lateinit var authenticationManager: AuthenticationManager
 
     @Throws(Exception::class)
     override fun configure(configurer: ClientDetailsServiceConfigurer) {
@@ -56,9 +56,9 @@ class AuthorizationServerConfig : AuthorizationServerConfigurerAdapter() {
                 .inMemory()
                 .withClient(clientId)
                 .secret(passwordEncoder.encode(clientSecret))
-                .authorizedGrantTypes(grantType!!)
+                .authorizedGrantTypes(grantType)
                 .scopes(scopeRead, scopeWrite)
-                .resourceIds(resourceIds!!)
+                .resourceIds(resourceIds)
     }
 
     @Throws(Exception::class)
